@@ -3,17 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Knight Bot - WhatsApp Linker</title>
+  <title>Zoro Bot - WhatsApp Linker</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary-color: #000000;
+      --primary-color: #0a6429; /* Vert foncé de Zoro */
       --secondary-color: #ffffff;
-      --accent-color: #f0f0f0;
-      --text-color: #000000;
-      --background-color: #ffffff;
-      --hover-color: #f5f5f5;
-      --border-color: rgba(0, 0, 0, 0.1);
+      --accent-color: #c00; /* Rouge du bandeau/sabre */
+      --text-color: #e0e0e0;
+      --background-color: #1a1a1a; /* Fond sombre */
+      --container-bg: #2a2a2a;
+      --hover-color: #3a3a3a;
+      --border-color: rgba(255, 255, 255, 0.1);
     }
 
     * {
@@ -23,7 +27,7 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Poppins', sans-serif;
       background: var(--background-color);
       color: var(--text-color);
       min-height: 100vh;
@@ -36,10 +40,10 @@
     .container {
       width: 100%;
       max-width: 450px;
-      background: var(--background-color);
+      background: var(--container-bg);
       border-radius: 16px;
       padding: 25px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.2);
       border: 1px solid var(--border-color);
     }
 
@@ -59,19 +63,19 @@
       justify-content: center;
       font-size: 28px;
       color: white;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 12px rgba(10, 100, 41, 0.3);
     }
 
     .title {
       font-size: 24px;
       font-weight: 700;
       margin-bottom: 8px;
-      color: var(--primary-color);
+      color: var(--secondary-color);
     }
 
     .subtitle {
       font-size: 14px;
-      color: rgba(0, 0, 0, 0.7);
+      color: rgba(255, 255, 255, 0.6);
       margin-bottom: 20px;
     }
 
@@ -97,7 +101,7 @@
 
     .social-icons a.youtube { background: #FF0000; }
     .social-icons a.telegram { background: #0088cc; }
-    .social-icons a.whatsapp { background: #0cfa10; }
+    .social-icons a.whatsapp { background: #25D366; }
     .social-icons a.github { background: #333; }
 
     .social-icons a:hover {
@@ -105,13 +109,12 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    /* Toggle Switch Styles */
     .toggle-container {
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 20px;
-      background: var(--hover-color);
+      background: var(--background-color);
       border-radius: 12px;
       padding: 4px;
       border: 1px solid var(--border-color);
@@ -139,7 +142,7 @@
     }
 
     .toggle-option:hover:not(.active) {
-      background: var(--background-color);
+      background: var(--hover-color);
     }
     .copy-btn {
       width: 100%;
@@ -154,6 +157,7 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      color: var(--text-color);
     }
 
     .copy-btn:hover {
@@ -190,7 +194,7 @@
     .input-field:focus {
       outline: none;
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 0 2px rgba(10, 100, 41, 0.2);
     }
 
     .generate-btn {
@@ -209,7 +213,7 @@
 
     .generate-btn:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 12px rgba(10, 100, 41, 0.3);
     }
 
     .generate-btn.hidden {
@@ -217,7 +221,7 @@
     }
 
     .code-display {
-      background: var(--hover-color);
+      background: var(--background-color);
       padding: 12px;
       border-radius: 12px;
       text-align: center;
@@ -232,8 +236,8 @@
     }
 
     .qr-display {
-      background: var(--hover-color);
-      padding: 30px;
+      background: var(--secondary-color);
+      padding: 20px;
       border-radius: 12px;
       text-align: center;
       margin-bottom: 16px;
@@ -244,19 +248,19 @@
     .qr-image {
       max-width: 280px;
       max-height: 280px;
-      margin: 0 auto 20px;
+      margin: 0 auto 15px;
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
     .qr-instructions {
       font-size: 13px;
-      color: rgba(0, 0, 0, 0.7);
+      color: #333;
       line-height: 1.5;
     }
 
     .success-message {
-      color: #000aff;
+      color: #25D366;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -294,47 +298,23 @@
       text-align: center;
       margin-top: 20px;
       font-size: 12px;
-      color: rgba(0, 0, 0, 0.5);
-    }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 20px;
-        border-radius: 12px;
-        max-width: 400px;
-      }
-
-      .code-display {
-        font-size: 16px;
-        min-height: 50px;
-      }
-
-      .qr-image {
-        max-width: 240px;
-        max-height: 240px;
-      }
-
-      .qr-display {
-        padding: 20px;
-      }
+      color: rgba(255, 255, 255, 0.4);
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo"><i class="fas fa-robot"></i></div>
-      <h1 class="title">Knight Bot</h1>
+      <div class="logo"><i class="fas fa-khanda"></i></div>
+      <h1 class="title">OKAMI-BASE:𝐙𝐎𝐑𝐎</h1>
       <p class="subtitle">Link your WhatsApp device</p>
       <div class="social-icons">
-        <a href="https://www.youtube.com/@mr_unique_hacker?sub_confirmation=1" target="_blank" class="youtube"><i class="fab fa-youtube"></i></a>
-        <a href="https://t.me/+hxojkc7kaVViYzdl" target="_blank" class="telegram"><i class="fab fa-telegram-plane"></i></a>
-        <a href="https://whatsapp.com/channel/0029Va90zAnIHphOuO8Msp3A" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
-        <a href="https://github.com/mruniquehacker/Knightbot-md" target="_blank" class="github"><i class="fab fa-github"></i></a>
+        <a href="https://t.me/SKAFS1" target="_blank" class="telegram"><i class="fab fa-telegram-plane"></i></a>
+        <a href="https://whatsapp.com/channel/0029Vb6DrnUHAdNQtz2GC307" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://github.com/Bsteph12/" target="_blank" class="github"><i class="fab fa-github"></i></a>
       </div>
     </div>
 
-    <!-- Toggle Switch -->
     <div class="toggle-container">
       <div class="toggle-option active" data-mode="pair">
         <i class="fas fa-key"></i> Pair Code
@@ -346,7 +326,7 @@
 
     <div class="input-group" id="inputGroup">
       <label class="input-label">Enter your WhatsApp number with country code</label>
-      <input type="text" id="mobileNumber" class="input-field" placeholder="+917023951514" pattern="[+][0-9]{10,}" title="Please enter country code starting with + followed by number">
+      <input type="text" id="mobileNumber" class="input-field" placeholder="+237XXXXXXXXX" pattern="[+][0-9]{10,}" title="Please enter country code starting with + followed by number">
     </div>
 
     <button class="generate-btn" id="submit">
@@ -373,28 +353,22 @@
     </button>
 
     <div class="footer">
-      <p>© 2025 Mr Unique Hacker | Knight Bot</p>
+      <p>© 2025  | okami nexus</p>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.0.0-alpha.1/axios.min.js"></script>
   <script>
+    // --- LA LOGIQUE JAVASCRIPT RESTE INCHANGÉE ---
     let currentMode = 'pair';
 
-    // Toggle functionality
     document.querySelectorAll('.toggle-option').forEach(option => {
       option.addEventListener('click', function() {
         const mode = this.dataset.mode;
         if (mode === currentMode) return;
-
-        // Update active state
         document.querySelectorAll('.toggle-option').forEach(opt => opt.classList.remove('active'));
         this.classList.add('active');
-
-        // Update mode
         currentMode = mode;
-
-        // Update button and input visibility
         const submitBtn = document.getElementById('submit');
         const inputGroup = document.getElementById('inputGroup');
         
@@ -405,11 +379,8 @@
         } else {
           submitBtn.classList.add('hidden');
           inputGroup.classList.add('hidden');
-          // Auto-generate QR code when QR mode is selected
           generateQRCode();
         }
-
-        // Clear displays
         document.getElementById('codeDisplay').innerHTML = 'Your pair code will appear here';
         document.getElementById('qrDisplay').style.display = 'none';
         document.getElementById('codeDisplay').style.display = 'flex';
@@ -420,14 +391,11 @@
       const codeDisplay = document.getElementById("codeDisplay");
       const qrDisplay = document.getElementById("qrDisplay");
       const loadingSpinner = document.getElementById("loading");
-
       loadingSpinner.style.display = "block";
       codeDisplay.innerHTML = '';
       qrDisplay.style.display = 'none';
-
       try {
         const response = await axios('/qr');
-        
         if (response.data.qr) {
           document.getElementById('qrImage').src = response.data.qr;
           document.getElementById('qrInstructions').innerHTML = response.data.instructions.join('<br>');
@@ -453,17 +421,14 @@
       const codeDisplay = document.getElementById("codeDisplay");
       const qrDisplay = document.getElementById("qrDisplay");
       const loadingSpinner = document.getElementById("loading");
-
       const mobileNumber = mobileNumberInput.value.trim();
       if (!mobileNumber) {
         codeDisplay.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-circle"></i> Please enter your WhatsApp number</div>';
         return;
       }
-
       loadingSpinner.style.display = "block";
       codeDisplay.innerHTML = '';
       qrDisplay.style.display = 'none';
-
       try {
         const response = await axios(`/pair?number=${mobileNumber.replace(/[^0-9]/g, "")}`);
         
