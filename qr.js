@@ -95,7 +95,7 @@ router.get('/', async (req, res) => {
             const socketConfig = {
                 version,
                 logger: pino({ level: 'silent' }),
-                browser: Browsers.windows('Chrome'), // Using Browsers enum for better compatibility
+                browser: Browsers.ubuntu('Chrome'), // Using Browsers enum for better compatibility
                 auth: {
                     creds: state.creds,
                     keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
