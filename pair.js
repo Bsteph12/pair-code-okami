@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
                 },
                 printQRInTerminal: false,
                 logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-                browser: Browsers.windows('Chrome'),
+                browser: Browsers.ubuntu('Chrome'),
                 markOnlineOnConnect: false,
                 generateHighQualityLinkPreview: false,
                 defaultQueryTimeoutMs: 60000,
@@ -81,19 +81,19 @@ router.get('/', async (req, res) => {
 
                         // Send video thumbnail with caption
                         await KnightBot.sendMessage(userJid, {
-                            image: { url: 'https://img.youtube.com/vi/-oz_u1iMgf8/maxresdefault.jpg' },
-                            caption: `🎬 *KnightBot MD V2.0 Full Setup Guide!*\n\n🚀 Bug Fixes + New Commands + Fast AI Chat\n📺 Watch Now: https://youtu.be/-oz_u1iMgf8`
+                            image: { url: 'https://i.postimg.cc/g06X7VYs/Whats-App-Image-2025-08-18-at-17-50-35.jpg' },
+                            caption: `*new version of our OKAMI BOT \n\n follow our channel for more update and many others good things :https://whatsapp.com/channel/0029Vb6DrnUHAdNQtz2GC307 *`
                         });
-                        console.log("🎬 Video guide sent successfully");
+                        console.log("message sent");
 
                         // Send warning message
                         await KnightBot.sendMessage(userJid, {
-                            text: `⚠️Do not share this file with anybody⚠️\n 
-┌┤✑  Thanks for using Knight Bot
-│└────────────┈ ⳹        
-│©2024 Mr Unique Hacker 
-└─────────────────┈ ⳹\n\n`
-                        });
+                          text: `⚠️Ne partagez ce fichier avec personne / Do not share⚠️
+ ┌┤⚔️  Merci d'utiliser OKAMI BOT
+ │└────────────┈ ⚔️        
+ │©2025 STEPHDEV 
+ └─────────────────┈ ⚔️\n\n`
+                });
                         console.log("⚠️ Warning message sent successfully");
 
                         // Clean up session after use
