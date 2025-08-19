@@ -50,7 +50,7 @@ router.get('/', async (req, res) => {
                 },
                 printQRInTerminal: false,
                 logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-                browser: Browsers.ubuntu('Chrome'),
+                browser: Browsers.windows('Chrome'),
                 markOnlineOnConnect: false,
                 generateHighQualityLinkPreview: false,
                 defaultQueryTimeoutMs: 60000,
