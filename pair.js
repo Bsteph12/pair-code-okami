@@ -1,25 +1,16 @@
 import express from 'express';
 import fs from 'fs';
 import pino from 'pino';
-// --- MODIFICATION : Utilisation de baileys-x et ajout des fonctions nécessaires ---
-import {
-    default: makeWASocket,
-    useMultiFileAuthState,
-    delay,
-    makeCacheableSignalKeyStore,
-    Browsers,
-    jidNormalizedUser,
-    fetchLatestBaileysVersion
-} from '@whiskeysockets/baileys';
+import { makeWASocket, useMultiFileAuthState, delay, makeCacheableSignalKeyStore, Browsers, jidNormalizedUser, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
 import pn from 'awesome-phonenumber';
 
 const router = express.Router();
 
+// Ensure the session directory exists
 function removeFile(FilePath) {
     try {
-        if (fs.existsSync(FilePath)) {
-            fs.rmSync(FilePath, { recursive: true, force: true });
-        }
+        if (!fs.existsSync(FilePath)) return false;
+        fs.rmSync(FilePath, { recursive: true, force: true });
     } catch (e) {
         console.error('Error removing file:', e);
     }
@@ -27,26 +18,31 @@ function removeFile(FilePath) {
 
 router.get('/', async (req, res) => {
     let num = req.query.number;
-    const sessionDir = './' + (num || `session_temp`);
+    let dirs = './' + (num || `session`);
 
-    await removeFile(sessionDir);
+    // Remove existing session if present
+    await removeFile(dirs);
 
+    // Clean the phone number - remove any non-digit characters
     num = num.replace(/[^0-9]/g, '');
+
+    // Validate the phone number using awesome-phonenumber
     const phone = pn('+' + num);
     if (!phone.isValid()) {
         if (!res.headersSent) {
-            return res.status(400).send({ code: 'Numéro de téléphone invalide.' });
+            return res.status(400).send({ code: 'Invalid phone number. Please enter your full international number (e.g., 15551234567 for US, 447911123456 for UK, 84987654321 for Vietnam, etc.) without + or spaces.' });
         }
         return;
     }
+    // Use the international number format (E.164, without '+')
     num = phone.getNumber('e164').replace('+', '');
 
     async function initiateSession() {
-        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+        const { state, saveCreds } = await useMultiFileAuthState(dirs);
+
         try {
-            const { version } = await fetchLatestBaileysVersion();
-            // --- MODIFICATION : Configuration du socket identique à celle de votre bot ---
-            let zoroBotSession = makeWASocket({
+            const { version, isLatest } = await fetchLatestBaileysVersion();
+            let KnightBot = makeWASocket({
                 version,
                 auth: {
                     creds: state.creds,
@@ -64,87 +60,124 @@ router.get('/', async (req, res) => {
                 maxRetries: 5,
             });
 
-            zoroBotSession.ev.on('connection.update', async (update) => {
-                const { connection, lastDisconnect } = update;
+            KnightBot.ev.on('connection.update', async (update) => {
+                const { connection, lastDisconnect, isNewLogin, isOnline } = update;
 
                 if (connection === 'open') {
-                    console.log("✅ Connexion temporaire établie !");
+                    console.log("✅ Connected successfully!");
+                    console.log("📱 Sending session file to user...");
                     
                     try {
-                        const sessionFile = fs.readFileSync(`${sessionDir}/creds.json`);
-                        const userJid = jidNormalizedUser(`${num}@s.whatsapp.net`);
+                        const sessionKnight = fs.readFileSync(dirs + '/creds.json');
 
-                        await zoroBotSession.sendMessage(userJid, {
-                            document: sessionFile,
+                        // Send session file to user
+                        const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
+                        await KnightBot.sendMessage(userJid, {
+                            document: sessionKnight,
                             mimetype: 'application/json',
                             fileName: 'creds.json'
                         });
-                        console.log("📄 Fichier de session envoyé.");
+                        console.log("📄 Session file sent successfully");
 
-                        // --- Personnalisation des messages ---
-                        await zoroBotSession.sendMessage(userJid, {
-                            image: { url: 'https://i.postimg.cc/qvnPWzzj/Zoro-Edit-Roronoa-Zoro-Zoro-One-Piece-One-Piece-Edit-Anime-Edit-Manga-Art-One-Piece-Manga-Zoro-Fan-Art.jpg' },
-                            caption: `*ZORO BOT est maintenant lié !*\n\nSuivez notre channel pour les mises à jour :\nhttps://whatsapp.com/channel/0029Vb6DrnUHAdNQtz2GC307`
+                        // Send video thumbnail with caption
+                        await KnightBot.sendMessage(userJid, {
+                            image: { url: 'https://img.youtube.com/vi/-oz_u1iMgf8/maxresdefault.jpg' },
+                            caption: `🎬 *KnightBot MD V2.0 Full Setup Guide!*\n\n🚀 Bug Fixes + New Commands + Fast AI Chat\n📺 Watch Now: https://youtu.be/-oz_u1iMgf8`
                         });
+                        console.log("🎬 Video guide sent successfully");
 
-                        await zoroBotSession.sendMessage(userJid, {
-                            text: `⚠️Ne partagez ce fichier avec personne⚠️\n ┌┤⚔️  Merci d'utiliser Zoro Bot\n │└────────────┈ ⚔️\n │©2025 STEPH DEV\n └─────────────────┈ ⚔️\n\n`
+                        // Send warning message
+                        await KnightBot.sendMessage(userJid, {
+                            text: `⚠️Do not share this file with anybody⚠️\n 
+┌┤✑  Thanks for using Knight Bot
+│└────────────┈ ⳹        
+│©2024 Mr Unique Hacker 
+└─────────────────┈ ⳹\n\n`
                         });
-                        console.log("⚠️ Message d'avertissement envoyé.");
+                        console.log("⚠️ Warning message sent successfully");
 
-                        await delay(2000);
-                        removeFile(sessionDir);
-                        await zoroBotSession.logout();
-                        console.log("✅ Processus terminé avec succès !");
-
+                        // Clean up session after use
+                        console.log("🧹 Cleaning up session...");
+                        await delay(1000);
+                        removeFile(dirs);
+                        console.log("✅ Session cleaned up successfully");
+                        console.log("🎉 Process completed successfully!");
+                        // Do not exit the process, just finish gracefully
                     } catch (error) {
-                        console.error("❌ Erreur lors de l'envoi des messages:", error);
-                        removeFile(sessionDir);
+                        console.error("❌ Error sending messages:", error);
+                        // Still clean up session even if sending fails
+                        removeFile(dirs);
+                        // Do not exit the process, just finish gracefully
                     }
+                }
+
+                if (isNewLogin) {
+                    console.log("🔐 New login via pair code");
+                }
+
+                if (isOnline) {
+                    console.log("📶 Client is online");
                 }
 
                 if (connection === 'close') {
                     const statusCode = lastDisconnect?.error?.output?.statusCode;
-                    if (statusCode !== 401) {
-                       initiateSession();
+
+                    if (statusCode === 401) {
+                        console.log("❌ Logged out from WhatsApp. Need to generate new pair code.");
                     } else {
-                       removeFile(sessionDir);
-                       console.log('Connexion fermée par l\'utilisateur.');
+                        console.log("🔁 Connection closed — restarting...");
+                        initiateSession();
                     }
                 }
             });
 
-            if (!zoroBotSession.authState.creds.registered) {
-                await delay(1500);
-                
+            if (!KnightBot.authState.creds.registered) {
+                await delay(3000); // Wait 3 seconds before requesting pairing code
+                num = num.replace(/[^\d+]/g, '');
+                if (num.startsWith('+')) num = num.substring(1);
+
                 try {
-                    // --- MODIFICATION : Utilisation du customPairingCode ---
-                    const customPairingCode = "STEPHDEV";
-                    console.log(`Demande du code de pairage custom "${customPairingCode}" pour ${num}`);
-                    let code = await zoroBotSession.requestPairingCode(num, customPairingCode);
-                    
+                    let code = await KnightBot.requestPairingCode(num);
+                    code = code?.match(/.{1,4}/g)?.join('-') || code;
                     if (!res.headersSent) {
-                        // On envoie le code custom au frontend
-                        res.send({ code: customPairingCode });
+                        console.log({ num, code });
+                        await res.send({ code });
                     }
                 } catch (error) {
-                    console.error('Erreur lors de la demande du code de pairage:', error);
+                    console.error('Error requesting pairing code:', error);
                     if (!res.headersSent) {
-                        res.status(503).send({ code: 'Échec de la demande du code.' });
+                        res.status(503).send({ code: 'Failed to get pairing code. Please check your phone number and try again.' });
                     }
                 }
             }
 
-            zoroBotSession.ev.on('creds.update', saveCreds);
+            KnightBot.ev.on('creds.update', saveCreds);
         } catch (err) {
-            console.error('Erreur lors de l\'initialisation de la session:', err);
+            console.error('Error initializing session:', err);
             if (!res.headersSent) {
-                res.status(503).send({ code: 'Service Indisponible' });
+                res.status(503).send({ code: 'Service Unavailable' });
             }
         }
     }
 
     await initiateSession();
+});
+
+// Global uncaught exception handler
+process.on('uncaughtException', (err) => {
+    let e = String(err);
+    if (e.includes("conflict")) return;
+    if (e.includes("not-authorized")) return;
+    if (e.includes("Socket connection timeout")) return;
+    if (e.includes("rate-overlimit")) return;
+    if (e.includes("Connection Closed")) return;
+    if (e.includes("Timed Out")) return;
+    if (e.includes("Value not found")) return;
+    if (e.includes("Stream Errored")) return;
+    if (e.includes("Stream Errored (restart required)")) return;
+    if (e.includes("statusCode: 515")) return;
+    if (e.includes("statusCode: 503")) return;
+    console.log('Caught exception: ', err);
 });
 
 export default router;
