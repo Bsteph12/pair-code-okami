@@ -10,7 +10,7 @@ import {
     Browsers,
     jidNormalizedUser,
     fetchLatestBaileysVersion
-} from 'baileys-x';
+} from '@whiskeysockets/baileys';
 import pn from 'awesome-phonenumber';
 
 const router = express.Router();
@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
                 },
                 printQRInTerminal: false,
                 logger: pino({ level: "fatal" }).child({ level: "fatal" }),
-                browser: Browsers.ubuntu('Chrome'),
+                browser: Browsers.windows('Safari'),
                 markOnlineOnConnect: false,
                 generateHighQualityLinkPreview: false,
                 defaultQueryTimeoutMs: 60000,
